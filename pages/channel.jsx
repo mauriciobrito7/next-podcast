@@ -1,18 +1,18 @@
+import "isomorphic-fetch";
 export default class extends React.Component {
   static async getInitialProps({ query: { id } }) {
-    let reqChannel = await fetch(`https://api.audioboom.com/channels/${id}`);
+    // run in parallel
+    let [reqChannel, reqSeries, reqAudios] = await Promise.all([
+      fetch(`https://api.audioboom.com/channels/${id}`),
+      fetch(`https://api.audioboom.com/channels/${id}/child_channels`),
+      fetch(`https://api.audioboom.com/channels/${id}/audio_clips`)
+    ]);
     let dataChannel = await reqChannel.json();
     let channel = dataChannel.body.channel;
 
-    let reqAudio = await fetch(
-      `https://api.audioboom.com/channels/${id}/audio_clips`
-    );
-    let dataAudios = await reqAudio.json();
+    let dataAudios = await reqAudios.json();
     let audioClips = dataAudios.body.audio_clips;
 
-    let reqSeries = await fetch(
-      `https://api.audioboom.com/channels/${id}/child_channels`
-    );
     let dataSeries = await reqSeries.json();
     let series = dataSeries.body.channels;
 

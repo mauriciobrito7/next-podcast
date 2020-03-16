@@ -104,22 +104,24 @@ module.exports =
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var isomorphic_fetch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! isomorphic-fetch */ "isomorphic-fetch");
+/* harmony import */ var isomorphic_fetch__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(isomorphic_fetch__WEBPACK_IMPORTED_MODULE_1__);
 var _jsxFileName = "C:\\Users\\Mauricio\\Documents\\Github\\myFirstNextApp\\pages\\channel.jsx";
 
 var __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;
+
 /* harmony default export */ __webpack_exports__["default"] = (class extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
   static async getInitialProps({
     query: {
       id
     }
   }) {
-    let reqChannel = await fetch(`https://api.audioboom.com/channels/${id}`);
+    // run in parallel
+    let [reqChannel, reqSeries, reqAudios] = await Promise.all([fetch(`https://api.audioboom.com/channels/${id}`), fetch(`https://api.audioboom.com/channels/${id}/child_channels`), fetch(`https://api.audioboom.com/channels/${id}/audio_clips`)]);
     let dataChannel = await reqChannel.json();
     let channel = dataChannel.body.channel;
-    let reqAudio = await fetch(`https://api.audioboom.com/channels/${id}/audio_clips`);
-    let dataAudios = await reqAudio.json();
+    let dataAudios = await reqAudios.json();
     let audioClips = dataAudios.body.audio_clips;
-    let reqSeries = await fetch(`https://api.audioboom.com/channels/${id}/child_channels`);
     let dataSeries = await reqSeries.json();
     let series = dataSeries.body.channels;
     return {
@@ -189,6 +191,17 @@ var __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;
 
 module.exports = __webpack_require__(/*! C:\Users\Mauricio\Documents\Github\myFirstNextApp\pages\channel.jsx */"./pages/channel.jsx");
 
+
+/***/ }),
+
+/***/ "isomorphic-fetch":
+/*!***********************************!*\
+  !*** external "isomorphic-fetch" ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("isomorphic-fetch");
 
 /***/ }),
 
