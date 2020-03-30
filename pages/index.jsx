@@ -2,23 +2,30 @@
 import "isomorphic-fetch";
 import Layout from "../components/Layout";
 import ChannelGrid from "../components/ChannelGrid";
+import Error from "next/error";
 export default class extends React.Component {
   // Only works on next js
-  static async getInitialProps() {
-    // some functions that are on browser aren't exist on node js
-    let req = await fetch("https://api.audioboom.com/channels/recommended");
-    let { body: channels } = await req.json();
-    return { channels };
+  static async getInitialProps({ res }) {
+    try {
+      // some functions that are on browser don't exist on node js
+      let req = await fetch("https://api.audioboom.com/channels/recommended");
+      let { body: channels } = await req.json();
+      return { channels, statusCode: 200 };
+    } catch (error) {
+      res.statusCode = 503;
+      return { channels: null, statusCode: 503 };
+    }
   }
 
   render() {
-    const { channels } = this.props;
+    const { channels, statusCode } = this.props;
+    if (statusCode !== 200) {
+      return <Error statusCode={statusCode} />;
+    }
     return (
-      <React.Fragment>
-        <Layout title="Podcasts">
-          <ChannelGrid channels={channels}></ChannelGrid>
-        </Layout>
-      </React.Fragment>
+      <Layout title="Podcasts">
+        <ChannelGrid channels={channels}></ChannelGrid>
+      </Layout>
     );
   }
 }
