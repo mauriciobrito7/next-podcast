@@ -11,6 +11,7 @@ function PodcastList({ podcasts, onclickPodcast }) {
           )}.${podcast.id}`}
           className="podcast"
           onClick={event => onclickPodcast(event, podcast)}
+          key={podcast.id}
         >
           <h3>{podcast.title}</h3>
           <div className="meta">{Math.ceil(podcast.duration / 60)} minutes</div>

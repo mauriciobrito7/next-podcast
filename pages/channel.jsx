@@ -2,10 +2,12 @@ import "isomorphic-fetch";
 // components
 import Layout from "../components/Layout";
 import PodcastList from "../components/PodcastList";
+import PodcastPlayer from "../components/PodcastPlayer";
+
 export default class extends React.Component {
   constructor(props) {
     super(props);
-    this.setState({ penPodcast: null });
+    this.state = { openPodcast: null };
   }
 
   static async getInitialProps({ query: { id } }) {
@@ -34,12 +36,34 @@ export default class extends React.Component {
     });
   };
 
+  closePodcast = event => {
+    event.preventDefault();
+    this.setState({
+      openPodcast: null
+    });
+  };
+
   render() {
     const { channel, audioClips, series } = this.props;
-    const openPodcast = this.state;
+    const { openPodcast } = this.state;
+    console.log(channel);
+
     return (
       <Layout title={channel.title}>
-        {openPodcast && <div>Hay un podcast abierto</div>}
+        <div
+          className="banner"
+          style={{
+            backgroundImage: `url(${channel.urls.banner_image.original ||
+              "https://www.podigee.com/images/homepage_banner.jpg"})`,
+            backgroundSize: "cover"
+          }}
+        />
+
+        {openPodcast && (
+          <div className="modal">
+            <PodcastPlayer clip={openPodcast} onClose={this.closePodcast} />
+          </div>
+        )}
 
         <h1>{channel.title}</h1>
 
@@ -48,8 +72,25 @@ export default class extends React.Component {
 
         <h2>Series</h2>
         {series.map(serie => (
-          <div className="series">{serie.title}</div>
+          <div key={serie.id} className="series">
+            {serie.title}
+          </div>
         ))}
+        <style jsx>{`
+          .banner {
+            width: 100%;
+            height: 200px;
+          }
+          .modal {
+            position: fixed;
+
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 9999;
+          }
+        `}</style>
       </Layout>
     );
   }
